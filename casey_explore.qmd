@@ -1,0 +1,88 @@
+---
+title: "casey_explore"
+format: html
+---
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+leases <- read.csv("2025 ASA DataFest-update2-2025-03-19/Leases.csv")
+price_avail <- read.csv("2025 ASA DataFest-update2-2025-03-19/Price and Availability Data.csv")
+unemployment <- read.csv("2025 ASA DataFest-update2-2025-03-19/Unemployment.csv")
+MMO <- read.csv("2025 ASA DataFest-update2-2025-03-19/Major Market Occupancy Data-revised.csv")
+```
+
+```{r}
+leases_filt <- leases %>% 
+  filter(leasedSF >= 10000 & market == "Manhattan") %>% 
+  #Tech, Finance, Legal is Savill's focus
+  filter(internal_industry == "Technology, Advertising, Media, and Information" | 
+           internal_industry == "Legal Services" | 
+           internal_industry == "Financial Services and Insurance"
+         ) %>% 
+  mutate(year_quarter = paste(year, quarter, sep = "_")) 
+
+```
+
+```{r}
+leases_filt %>% 
+  filter(!is.na(available_space)) %>% 
+  ggplot(aes(x = year, y = available_space, color = internal_industry)) + 
+  geom_smooth(se = FALSE) + 
+  theme_minimal() + 
+  facet_wrap(~internal_submarket) + 
+  labs(title = "Available Space in Submarkets of Manhattan")
+```
+
+```{r}
+ggplot(data = leases_filt, aes(x = year, y = overall_rent, color = internal_industry)) + 
+  geom_smooth(se = FALSE) + 
+  theme_minimal() + 
+  facet_wrap(~internal_submarket) + 
+  labs(title = "Available Space in Submarkets of Manhattan")
+```
+
+```{r}
+leases_filt %>% 
+  filter(!is.na(availability_proportion)) %>% 
+ggplot(aes(x = year, y = availability_proportion, color = internal_industry)) + 
+  geom_smooth(se = FALSE) + 
+  theme_minimal() + 
+  facet_wrap(~internal_submarket) + 
+  labs(title = "Available Proportion in Submarkets of Manhattan")
+```
+
+```{r}
+leases_filt %>% 
+  filter(!is.na(leasing)) %>% 
+ggplot(aes(x = year, y = leasing, color = internal_industry)) + 
+  geom_smooth(se = FALSE) + 
+  theme_minimal() + 
+  facet_wrap(~internal_submarket) + 
+  labs(title = "Available Proportion in Submarkets of Manhattan")
+```
+
+```{r}
+leases_select2 <- leases_filt %>% 
+  select(year, year_quarter, leasing, internal_industry, internal_submarket, internal_market_cluster) %>% 
+  unique()
+```
+
+```{r}
+leases_select2$year_quarter <- as.factor(leases_select2$year_quarter)
+```
+
+```{r}
+leases_select2 %>% 
+  filter(!is.na(leasing)) %>% 
+ggplot(aes(x = year_quarter, y = leasing, color = internal_industry)) + 
+  geom_smooth(se = FALSE) + 
+  theme_minimal() + 
+  facet_wrap(~internal_market_cluster) + 
+  labs(title = "Leasing in Submarkets of Manhattan")
+```
+
+
