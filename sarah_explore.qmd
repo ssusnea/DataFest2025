@@ -26,7 +26,8 @@ subset_leases <- leases |>
                            quarter == "Q2" ~ "04-01",
                            quarter == "Q3" ~ "07-01",
                            quarter == "Q4" ~ "10-01"),
-         quarter_start = paste(year, month, sep = "-"))
+         quarter_start = paste(year, month, sep = "-"),
+         max_occupancy = floor(leasedSF/175))
 
 subset_leases$year_quarter <- as.factor(subset_leases$year_quarter) 
 subset_leases$quarter_start <- as.Date(subset_leases$quarter_start)
@@ -76,6 +77,40 @@ subset_leases |>
 subset_leases |> 
   filter(internal_industry == "Financial Services and Insurance" & market == "Manhattan") |> 
   ggplot()
+```
+
+```{r}
+subset_leases |> 
+  filter(internal_industry == "Financial Services and Insurance") |> 
+  ggplot() + 
+  geom_line(aes(x = quarter_start, y = RBA, color = internal_class)) + 
+  geom_line(aes(x = quarter_start, y = available_space, color = internal_class)) + 
+  geom_line(aes(x = quarter_start, y = available_space, color = internal_class))
+```
+
+## Summary Stats: 
+
+```{r}
+subset_leases |> 
+  group_by(internal_industry, year) |> 
+  summarize(mean_sublet_availability = mean(sublet_availability_proportion)) |> View()
+```
+
+```{r}
+subset_leases |> 
+  filter(space_type == "New")
+```
+
+
+# 
+
+```{r}
+library(sf)
+nyc <- us.cities |> filter(name == "New York NY") |> 
+st_as_sf(coords = c("long", "lat"), crs = 4326)
+
+ggplot() + 
+  geom_sf(data = nyc)
 ```
 
 
