@@ -4,22 +4,26 @@ format: html
 ---
 
 ```{r}
-leases <- read.csv("2025 ASA DataFest-update2-2025-03-19/Leases.csv")
-price_avail <- read.csv("2025 ASA DataFest-update2-2025-03-19/Price and Availability Data.csv")
-unemployment <- read.csv("2025 ASA DataFest-update2-2025-03-19/Unemployment.csv")
-MMO <- read.csv("2025 ASA DataFest-update2-2025-03-19/Major Market Occupancy Data-revised.csv")
-```
-
-```{r}
 library(tidycensus)
 library(tidyverse)
 library(ggplot2)
 ```
 
 ```{r}
+leases <- read.csv("2025 ASA DataFest-update2-2025-03-19/Leases.csv")
+price_avail <- read.csv("2025 ASA DataFest-update2-2025-03-19/Price and Availability Data.csv")
+unemployment <- read.csv("2025 ASA DataFest-update2-2025-03-19/Unemployment.csv")
+MMO <- read.csv("2025 ASA DataFest-update2-2025-03-19/Major Market Occupancy Data-revised.csv")
+```
+
+
+# Manipulating data: 
+```{r}
 subset_leases <- leases |> 
-  filter(market %in% c("Manhattan") &  leasedSF >= 10000 & internal_industry %in% c("Legal Services", "Financial Services and Insurance", "Technology, Advertising, Media, and Information")) |> 
+  filter(market %in% c("Manhattan") &  leasedSF >= 10000 & internal_industry %in% c("Legal Services", "Financial Services and Insurance", "Technology, Advertising, Media, and Information") & !is.na(direct_available_space) & !is.na(direct_availability_proportion) & !is.na(direct_internal_class_rent) &  !is.na(direct_overall_rent) & !is.na(sublet_available_space) & !is.na(sublet_availability_proportion) & !is.na(sublet_internal_class_rent) & !is.na(sublet_overall_rent)) |>  
   mutate(year_quarter = paste(year, quarter, sep = "_"))
+
+subset_leases$year_quarter <- as.factor(subset_leases$year_quarter) 
 ```
 
 **Notes:** 
