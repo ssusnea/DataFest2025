@@ -10,3 +10,56 @@ unemployment <- read.csv("2025 ASA DataFest-update2-2025-03-19/Unemployment.csv"
 MMO <- read.csv("2025 ASA DataFest-update2-2025-03-19/Major Market Occupancy Data-revised.csv")
 ```
 
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+subset_leases <- leases |> 
+  filter(market %in% c("Manhattan") &  leasedSF >= 10000 & internal_industry %in% c("Legal Services", "Financial Services and Insurance", "Technology, Advertising, Media, and Information")) |> 
+  mutate(year_quarter = paste(year, quarter, sep = "_"))
+```
+
+**Notes:** 
+- A is high quality building, O is otherwise 
+
+
+```{r}
+subset_unemployment <- unemployment |> 
+  filter(state %in% c("NY"))
+```
+
+```{r}
+subset_MMO <- MMO |> 
+  filter(market %in% c("Manhattan"))
+```
+
+# EDA 
+
+```{r}
+subset_leases |> 
+  ggplot(aes(x = leasedSF)) + 
+  geom_histogram()
+
+subset_leases |> 
+  ggplot(aes(x = overall_rent)) + 
+  geom_histogram()
+
+subset_leases |> 
+  ggplot(aes(x = monthsigned)) + 
+  geom_histogram()
+```
+
+```{r}
+subset_leases |> 
+  filter(internal_industry == "Financial Services and Insurance" & market == "Manhattan") |> View()
+
+subset_leases |> 
+  filter(internal_industry == "Financial Services and Insurance" & market == "Manhattan") |> 
+  ggplot()
+```
+
+
+
